@@ -1,0 +1,18 @@
+4.  
+
+List of all queue function operations available for manipulation of data elements in c are : 
+
+i. isfull() - To check if the queue is full.
+
+ii. isempty() - To check if the queue is empty.
+
+iii. enqueue() - To insert an element to the queue.
+
+iv. dequeue() - To delete an element from the queue.
+
+v. peak() - To obtain the first element of the queue.
+
+vi. size() - To obtain the size of the queue.
+
+
+
