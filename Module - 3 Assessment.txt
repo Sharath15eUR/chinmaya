@@ -1,0 +1,197 @@
+﻿Module 3 assignment 
+
+1. Which signals are triggered, when the following actions are performed. 
+	
+user press ctrl+C - SIGINT 
+kill() system call is invoked - SIGTERM (Signal Terminate) 
+CPU tried to execute an illegal instruction - SIGILL
+When the program access the unassigned memory - SIGSEGV (Signal Segmentation Violation)
+
+2. List the gdb command for the following operations  
+
+To run the current executable file - run [args]
+To create breakpoints at - b function
+To resume execution once after breakpoint - continue
+To clear break point created for a function - delete
+Print the parameters of the function in the backtrace - info args
+
+3. Guess the output for the following program.
+
+#include <stdio.h>
+
+#include <unistd.h>
+
+int main()
+
+{
+
+if (fork() && (!fork())) {
+
+if (fork() || fork()) {
+
+fork();
+
+}
+
+}
+
+printf("2 ");
+
+return 0;
+
+}
+
+output - 2 2 2 2 
+
+4. Guess the output for the following program.
+
+#include <stdio.h>
+
+#include <unistd.h>
+
+int main()
+
+{
+
+if (fork()) {
+
+if (!fork()) {
+
+fork(); printf("1 ");
+
+}
+
+else { printf("2 "); }
+
+}
+
+else { printf("3 ");
+
+}
+
+printf("4 ");
+
+return 0;
+}
+
+output - 2 4 3 4
+
+
+5. Create two thread functions to print hello and world separately and create threads for each and execute them one after other in C.
+
+#include <stdio.h>
+#include <pthread.h>
+
+
+void *printHello(void *arg) {
+    printf("Hello ");
+    pthread_exit(NULL); 
+}
+
+
+void *printWorld(void *arg) {
+    printf("World\n");
+    pthread_exit(NULL); 
+}
+
+int main() {
+    pthread_t helloThread, worldThread;
+
+   
+    if (pthread_create(&helloThread, NULL, printHello, NULL) != 0) {
+        perror("pthread_create");
+        return 1;
+    }
+
+    
+    pthread_join(helloThread, NULL);
+
+    
+    if (pthread_create(&worldThread, NULL, printWorld, NULL) != 0) {
+        perror("pthread_create");
+        return 1;
+    }
+
+    
+    pthread_join(worldThread, NULL);
+
+    return 0;
+}
+
+
+6. How to avoid Race conditions and deadlocks? 
+
+It is avoided by usage of synchronization techniques like locks, mutex, semaphores.
+
+
+7. What is the difference between exec and fork ?
+
+Fork creates a new process while retaining its original process, whereas exec also creates a new process but does not retain the original process.
+
+8. What is the difference between process and thread?
+
+Programs are basically programs that is being executing to perfom a particular action. Threads are smallest individual blocks of a process. A process can have more than one thread that can all together form a process. 
+
+9. Write a C program to demonstrate the use of Mutexes in threads synchronization 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define NUM_THREADS 10
+
+int counter = 0;
+
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void *threadFunction(void *arg) {
+    int i;
+    int thread_id = *((int *)arg);
+
+    
+    for (i = 0; i < 1000; i++) {
+        
+        pthread_mutex_lock(&mutex);
+
+        
+        counter++;
+
+        
+        pthread_mutex_unlock(&mutex);
+    }
+
+    printf("Thread %d: Counter = %d\n", thread_id, counter);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    int thread_args[NUM_THREADS];
+    int i;
+
+    
+    for (i = 0; i < NUM_THREADS; i++) {
+        thread_args[i] = i;
+        if (pthread_create(&threads[i], NULL, threadFunction, &thread_args[i]) != 0) {
+            perror("pthread_create");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    
+    for (i = 0; i < NUM_THREADS; i++) {
+        if (pthread_join(threads[i], NULL) != 0) {
+            perror("pthread_join");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    printf("Final counter value: %d\n", counter);
+
+    return 0;
+}
+
+
+
